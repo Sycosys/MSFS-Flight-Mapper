@@ -298,8 +298,8 @@
     zm=basezoom-Math.log1p(gndAlt/10);
     if (x==50){
       x=0
-      console.log(x)
-      if(zoomBool==true){       
+      //console.log(x)
+      if(zoomBool==true && panBool==true){       
         view.goTo({
         target:newPointGraphic,
         tilt:65,
@@ -309,16 +309,26 @@
         easing: "out-quint"})
       
       }
-      else{
+      if(zoomBool==false && panBool==true){       
         view.goTo({
         target:newPointGraphic,
         tilt:65,
         heading:bearing,  
         speedFactor: 0.1, // animation is 10 times slower than default
         easing: "out-quint"})
-      
-        }
-        if(panBool==true){ //mymap.panTo(new L.LatLng(lat,long));
+      }
+      if(zoomBool==true && panBool==false){       
+        view.goTo({
+        target:newPointGraphic,
+        zoom:zm, 
+        speedFactor: 0.1, // animation is 10 times slower than default
+        easing: "out-quint"})
+      }
+      if (zoomBool==false && panBool==false){
+        view.goTo({
+        target:newPointGraphic,
+        speedFactor: 0.1, // animation is 10 times slower than default
+        easing: "out-quint"})
         }
       }
     x+=1
@@ -331,7 +341,7 @@
     graphicsLayer.add(newPolylineGraphic);
     pointGraphic=newPointGraphic.clone();
 
-    
+  
     
     var empty_labels = data_simconnect.LABELS;
     var list_landing_gs = data_simconnect.G_FORCE_LANDING_LIST;
