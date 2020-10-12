@@ -9,6 +9,8 @@ Flight mapping tool 2.0 is in early development and may have bugs.
 - **Cleaned UI
 - **ToDo: Add abilty to save out a flight track with several flight variables in CSV/SHP/KML
 
+in action: https://www.youtube.com/watch?v=unwvrndehZA&feature=youtu.be
+
 ![](images/Screen_2.png)
 
 
