@@ -16,7 +16,7 @@ Flight mapping tool is in early development and may have bugs. Access by clickin
 - Download msfs_flightmapper.exe from the dist folder
 - Start MSFS 2020
 - Run msfs_flightmapper.exe
-- navigate to Localhost:50001 in a browser of your choice
+- navigate to localhost:5001 (127.0.0.1:5001) in a browser of your choice
  
 
 
