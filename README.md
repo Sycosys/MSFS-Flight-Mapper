@@ -2,7 +2,7 @@
 ## Track flight in 3D in stand alone browser app. 
 
 
-Flight mapping tool is in early development and may have bugs. Access by clicking the flight mapping tab at top of localhost:5000 page. 
+Flight mapping tool 2.0 is in early development and may have bugs. 
 ## October 12, 2020: Mapping 2.0
 - **Run the App with an EXE! No more python requirements
 - **Rebuilt mapping based on ESRI Sceneview 3D mapping tools
