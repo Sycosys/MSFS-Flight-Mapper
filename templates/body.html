@@ -1,0 +1,683 @@
+{% extends "head.html" %}
+{% block body %}
+
+
+<body onload="loadESRIMap(); update_values();">
+<style>
+  #mapid {
+    
+  border: 3px solid black;
+  border-radius: 12px;
+  height: 95vh;  /* or as desired */
+  width: 80%;  /* This means "100% of the width of its container", the .col-md-8 */
+}
+#bob{
+  padding-left:15px;
+
+}
+ #ltlgdisp {
+        position: absolute; 
+        top: 10px;
+        right:10px;
+        z-index: 3;
+ }
+</style>
+  <div class="container-fluid">
+    <h3 id="ltlgdisp"><i class="tim-icons icon-send text-info"></i><span>Position </span><span id="LATITUDE_Output">?</span>, <span id="LONGITUDE_Output">?</span></h3>
+    <div class="test">
+      <div  id="map" >
+        <button type="button" id="toggleZoom" class="btn btn-secondary" onclick="zoomToggle();">Disable Autozoom</button>
+        <button type="button" id="togglePan" class="btn btn-secondary" onclick="panToggle();">Disable Auto Pan</button>
+        <button type="button" id="clearTrack" class="btn btn-info" onclick="clearTrack();">Clear Track</button>
+        
+        <div class="row" id="bob">   
+          <div class="col-md-10" id="mapid">      
+          </div>
+          <div class="col-md-2">
+            <div class="col-sm-12">
+              <div class="card card-chart">
+                <div class="card-header">
+                <h5 class="card-category">Current Speed (knots)</h5>
+                <h4 class="card-title"></i> True  <span id="HORIZONTAL_SPEED_Output">?</span></h4>
+                <h4 class="card-title"></i> Indic <span id="INDICATED_SPEED_Output">?</span></h4>
+                <h4 class="card-title"></i> Grnd <span id="GRND_SPEED_Output">?</span></h4>
+                <h4 class="card-title"></i> Mach <span id="MACH_SPEED_Output">?</span></h4>
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-12">
+              <div class="card card-chart">
+                <div class="card-header">
+                <h5 class="card-category">Atmosphere Info</h5>
+                <h4 class="card-title"></i> Wind (knots)  <span id="WIND_SPD_Output">?</span></h4>
+                <h4 class="card-title"></i> Dir (Degres) <span id="WIND_DIR_Output">?</span></h4>
+                <h4 class="card-title"></i> Wind VS <span id="WIND_VS_Output">?</span></h4>              
+                <h4 class="card-title"></i> Sea Lvl P <span id="SEALEVEL_Output">?</span></h4>
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-12">
+              <div class="card card-chart">
+                <div class="card-header">
+                <h5 class="card-category">Current Altitude (feet)</h5>
+                <h4 class="card-title"></i> ASL  <span id="ALTITUDE_Output">?</span></h4>
+                <h4 class="card-title"></i> AGL <span id="GND_ALTITUDE_Output">?</span></h4>
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-12">
+              <div class="card card-chart">
+                <div class="card-header">
+                <h5 class="card-category">Ground Elevation</h5>
+                <h4 class="card-title"></i><span id="GRND_ELEV_Output">?</span> ft</h4>
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-12">
+              <div class="card card-chart">
+                <div class="card-header">
+                <h5 class="card-category">Destination Distance</h5>
+                <h4 class="card-title"></i><span id="TARGET_DIST_Output">?</span> nm</h4>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>  
+      </div>
+    </div>
+  </div>
+<script src="/static/assets/js/core/jquery.min.js"></script>
+<script src="/static/assets/js/core/popper.min.js"></script>
+<script src="/static/assets/js/core/bootstrap.min.js"></script>
+<script src="/static/assets/js/plugins/perfect-scrollbar.jquery.min.js"></script>
+<script>
+  function swapSizes(x){
+    if (x==0){
+      document.getElementById("lndIns").style.fontSize = "xx-large";
+      document.getElementById("fltMap").style.fontSize = "x-large";
+      document.getElementById("lndIns").style.color = '#66ffcc';
+      document.getElementById("fltMap").style.color = '#669999';
+    }
+    if (x==1){
+      document.getElementById("lndIns").style.fontSize = "x-large";
+      document.getElementById("fltMap").style.fontSize = "xx-large";
+      document.getElementById("fltMap").style.color = '#66ffcc';
+      document.getElementById("lndIns").style.color = '#669999';
+    }
+  }
+</script>
+<script>
+  //document.getElementById("G_FORCE_Output").innerHTML;
+  //document.getElementById("VERTICAL_SPEED_Output").innerHTML;
+  //document.getElementById("G_FORCE_LANDING_Output").innerHTML;
+  //document.getElementById("VERTICAL_SPEED_LANDING_Output").innerHTML;
+  //document.getElementById("LANDING_RATING_Output").innerHTML;
+</script>
+
+<!-- Chart JS -->
+<script src="/static/assets/js/plugins/chartjs.min.js"></script>
+<!-- Control Center for Black Dashboard: parallax effects, scripts for the example pages etc -->
+<script src="/static/assets/js/black-dashboard.min.js?v=1.0.0"></script>
+<!--   Core JS Files   -->
+
+<style>
+  html,
+  body,
+  #viewDiv {
+    padding: 0;
+    margin: 0;
+    height: 100%;
+    width: 100%;
+  }
+</style>
+
+
+<script type="text/javascript">
+    // SimConnect Scripts
+    var dummy = 1;
+    var intervalID = setInterval(update_values,100);
+    var mymap;
+    var marker;
+    var trackline;
+    //[lat,long,bearing,seaAlt,gndAlt,vel,vs,throttle,fuel,onGround,etc?]
+    var trackData=[];
+    var point;
+    var view;
+    var viewPt;
+    var pointGraphic;
+    var graphicsLayer;
+    var polyline
+    var polylineGraphic 
+    var path =[]
+    var panBool=true;
+    var zoomBool=true;
+    var x = 0;
+
+    function panToggle(){
+      var elm =document.getElementById("togglePan");
+      if (panBool==true){
+        panBool=false;
+        elm.innerHTML = "Enable Auto Pan";
+      }
+      else{
+        panBool=true;
+        elm.innerHTML = "Disable Auto Pan";
+      }
+    }
+
+    function zoomToggle(){
+      var elm =document.getElementById("toggleZoom");
+      if (zoomBool==true){
+        zoomBool=false;
+        elm.innerHTML = "Enable Autozoom";
+      }
+      else{
+        zoomBool=true;
+        elm.innerHTML = "Disable Autozoom";
+      }
+    }
+
+    function clearTrack(){
+      path=[]
+    }
+
+    function saveTrack(){
+      //Must Do
+    }
+    function loadESRIMap(){
+      //document.getElementById("lndIns").style.color = '#669999';
+      //document.getElementById("fltMap").style.color = '#669999';
+      //document.getElementById("lndIns").style.fontSize = "x-large";
+      //document.getElementById("fltMap").style.fontSize = "x-large";
+      require(["esri/Map", "esri/views/SceneView","esri/Viewpoint","esri/layers/GraphicsLayer",
+        "esri/Graphic","esri/widgets/BasemapToggle"], function (Map, SceneView,Viewpoint, GraphicsLayer, Graphic,BasemapToggle) {
+         mymap = new Map({
+          basemap: "hybrid",
+          ground: "world-elevation"
+        });
+        graphicsLayer = new GraphicsLayer();
+        mymap.add(graphicsLayer);
+        view = new SceneView({
+          container: "mapid",
+          map: mymap,
+          scale: 50000000,
+          center: [-101.17, 21.78]
+        });
+
+        //viewPt= new Viewpoint()
+        var basemapToggle = new BasemapToggle({
+          view: view,  // The view that provides access to the map's "streets-vector" basemap
+          nextBasemap: "osm"  // Allows for toggling to the "hybrid" basemap
+        });
+        view.ui.add(basemapToggle, {
+          position: "bottom-left"
+        });
+        point = {
+          type: "point", // autocasts as new Point()
+          x: 0,
+          y: 0,
+          z: 0
+        };
+        markerSymbol = {
+          type: "simple-marker", // autocasts as new SimpleMarkerSymbol()
+          color: [226, 119, 40],
+          outline: {
+            // autocasts as new SimpleLineSymbol()
+            color: [255, 255, 255],
+            width: 2
+          }
+        };
+
+        pointGraphic = new Graphic({
+          geometry: point,
+          symbol: markerSymbol
+        });
+
+        graphicsLayer.add(pointGraphic);
+
+        polyline = {
+          type: "polyline", // autocasts as new Polyline()
+          paths: [[0,0,0]]
+        };
+
+        lineSymbol = {
+          type: "simple-line", // autocasts as SimpleLineSymbol()
+          color: [155, 55, 155],
+          width: 4
+        };
+
+        polylineGraphic = new Graphic({
+          geometry: polyline,
+          symbol: lineSymbol
+        });
+
+        graphicsLayer.add(polylineGraphic);
+
+      });
+    }
+
+    function update_values() {
+    $.getJSON($SCRIPT_ROOT + '/_stuff',
+    
+    function (data_simconnect) {
+      $('#G_FORCE_Output').text(data_simconnect.G_FORCE)
+      $('#MAX_G_Output').text(data_simconnect.MAX_G_FORCE)
+      $('#VERTICAL_SPEED_Output').text(data_simconnect.VERTICAL_SPEED)
+      $('#ALTITUDE_Output').text(data_simconnect.ALTITUDE)
+      $('#GND_ALTITUDE_Output').text(data_simconnect.GND_ALTITUDE)
+      $('#HORIZONTAL_SPEED_Output').text(data_simconnect.HORIZONTAL_SPEED)
+      $('#INDICATED_SPEED_Output').text(data_simconnect.INDICATED_SPEED)
+      $('#MACH_SPEED_Output').text(data_simconnect.MACH_SPEED)
+      $('#GRND_SPEED_Output').text(data_simconnect.GRND_SPEED)
+
+      $('#WIND_DIR_Output').text(data_simconnect.WIND_DIR)
+      $('#WIND_SPD_Output').text(data_simconnect.WIND_SPEED)
+      $('#WIND_VS_Output').text(data_simconnect.WIND_VS)
+      $('#BARO_Output').text(data_simconnect.BARO)
+      $('#SEALEVEL_Output').text(data_simconnect.SEALEVEL)
+
+      $('#GRND_ELEV_Output').text(data_simconnect.GRND_ELEV)
+      $('#LATITUDE_Output').text(data_simconnect.LATITUDE.toFixed(7))
+      $('#LONGITUDE_Output').text(data_simconnect.LONGITUDE.toFixed(7))
+      $('#TARGET_DIST_Output').text(data_simconnect.TARGET_DIST)
+      $('#G_FORCE_LANDING_Output').text(data_simconnect.G_FORCE_LANDING)
+      $('#VERTICAL_SPEED_LANDING_Output').text(data_simconnect.VERTICAL_SPEED_LANDING)
+      $('#LANDING_RATING_Output').text(data_simconnect.LANDING_RATING)
+    lat=data_simconnect.LATITUDE
+    long=data_simconnect.LONGITUDE
+    gndAlt=data_simconnect.GND_ALTITUDE
+    seaAlt=data_simconnect.ALTITUDE
+    dist=data_simconnect.TARGET_DIST
+    bearing=data_simconnect.BEARING
+    coordSet=[long,lat,seaAlt*0.3048];
+    path.push(coordSet)
+    var newPointGraphic=pointGraphic.clone();
+    var newPolylineGraphic=polylineGraphic.clone();
+    graphicsLayer.removeAll();
+    basezoom=19;
+    zm=basezoom-Math.log1p(gndAlt/10);
+    if (x==50){
+      x=0
+      console.log(x)
+      if(zoomBool==true){       
+        view.goTo({
+        target:newPointGraphic,
+        tilt:65,
+        zoom:zm,
+        heading:bearing,  
+        speedFactor: 0.1, // animation is 10 times slower than default
+        easing: "out-quint"})
+      
+      }
+      else{
+        view.goTo({
+        target:newPointGraphic,
+        tilt:65,
+        heading:bearing,  
+        speedFactor: 0.1, // animation is 10 times slower than default
+        easing: "out-quint"})
+      
+        }
+        if(panBool==true){ //mymap.panTo(new L.LatLng(lat,long));
+        }
+      }
+    x+=1
+
+    newPolylineGraphic.geometry.paths=path
+    newPointGraphic.geometry.latitude=lat;
+    newPointGraphic.geometry.longitude=long;
+    newPointGraphic.geometry.z=seaAlt*0.3048 
+    graphicsLayer.add(newPointGraphic);
+    graphicsLayer.add(newPolylineGraphic);
+    pointGraphic=newPointGraphic.clone();
+
+    
+    
+    var empty_labels = data_simconnect.LABELS;
+    var list_landing_gs = data_simconnect.G_FORCE_LANDING_LIST;
+    var list_landing_vspeed = data_simconnect.VERTICAL_SPEED_LANDING_LIST;
+    var list_landing_alts = data_simconnect.PLANE_ALT_ABOVE_GROUND_LIST;
+    var list_landing_gs_ground = data_simconnect.G_FORCE_LANDING_LIST_GROUND
+    var list_landing_vspeed_ground = data_simconnect.VERTICAL_SPEED_LANDING_LIST_GROUND;
+    var list_landing_alts_ground = data_simconnect.PLANE_ALT_ABOVE_GROUND_LIST_GROUND;
+    var landing_rating = data_simconnect.LANDING_RATING;
+    var landing_counter = data_simconnect.LANDING_COUNTER;
+  
+    if (dummy <= landing_counter) {
+    
+    
+  $(document).ready(function() {
+    // Javascript method's body can be found in assets/js/demos.js
+    demo.initDashboardPageCharts();
+  
+  });
+  
+  demo = {
+  
+    initDashboardPageCharts: function() {
+  
+  // BEGINNING CHARTS 
+  gradientChartOptionsConfigurationWithTooltipBlue = {
+        maintainAspectRatio: false,
+        legend: {
+          display: false
+        },
+  
+        tooltips: {
+          backgroundColor: '#f5f5f5',
+          titleFontColor: '#333',
+          bodyFontColor: '#666',
+          bodySpacing: 4,
+          xPadding: 12,
+          mode: "nearest",
+          intersect: 0,
+          position: "nearest"
+        },
+        responsive: true,
+        scales: {
+          yAxes: [{
+            barPercentage: 1.6,
+            gridLines: {
+              drawBorder: false,
+              color: 'rgba(29,140,248,0.0)',
+              zeroLineColor: "transparent",
+            },
+            ticks: {
+              padding: 20,
+              fontColor: "#9a9a9a"
+            }
+          }],
+  
+          xAxes: [{
+            barPercentage: 1.6,
+            gridLines: {
+              drawBorder: false,
+              color: 'rgba(29,140,248,0.1)',
+              zeroLineColor: "transparent",
+            },
+            ticks: {
+              padding: 20,
+              fontColor: "#9a9a9a"
+            }
+          }]
+        }
+      };
+
+  gradientChartOptionsConfigurationWithTooltipPurple = {
+        maintainAspectRatio: false,
+        legend: {
+          display: false
+        },
+  
+        tooltips: {
+          backgroundColor: '#f5f5f5',
+          titleFontColor: '#333',
+          bodyFontColor: '#666',
+          bodySpacing: 4,
+          xPadding: 12,
+          mode: "nearest",
+          intersect: 0,
+          position: "nearest"
+        },
+        responsive: true,
+        scales: {
+          yAxes: [{
+            barPercentage: 1.6,
+            gridLines: {
+              drawBorder: false,
+              color: 'rgba(29,140,248,0.0)',
+              zeroLineColor: "transparent",
+            },
+            ticks: {
+              padding: 20,
+              fontColor: "#9a9a9a"
+            }
+          }],
+  
+          xAxes: [{
+            barPercentage: 1.6,
+            gridLines: {
+              drawBorder: false,
+              color: 'rgba(225,78,202,0.1)',
+              zeroLineColor: "transparent",
+            },
+            ticks: {
+              padding: 20,
+              fontColor: "#9a9a9a"
+            }
+          }]
+        }
+      };
+  
+  gradientChartOptionsConfigurationWithTooltipGreen = {
+        maintainAspectRatio: false,
+        legend: {
+          display: false
+        },
+  
+        tooltips: {
+          backgroundColor: '#f5f5f5',
+          titleFontColor: '#333',
+          bodyFontColor: '#666',
+          bodySpacing: 4,
+          xPadding: 12,
+          mode: "nearest",
+          intersect: 0,
+          position: "nearest"
+        },
+        responsive: true,
+        scales: {
+          yAxes: [{
+            barPercentage: 1.6,
+            gridLines: {
+              drawBorder: false,
+              color: 'rgba(29,140,248,0.0)',
+              zeroLineColor: "transparent",
+            },
+            ticks: {
+              padding: 20,
+              fontColor: "#9a9a9a"
+            }
+          }],
+  
+          xAxes: [{
+            barPercentage: 1.6,
+            gridLines: {
+              drawBorder: false,
+              color: 'rgba(0,242,195,0.1)',
+              zeroLineColor: "transparent",
+            },
+            ticks: {
+              padding: 20,
+              fontColor: "#9a9a9a"
+            }
+          }]
+        }
+      };
+      
+     
+  
+  /// Good Example ///
+  
+      var chartGs = document.getElementById("chartLineGs").getContext("2d");
+  
+      var data = {
+        labels: empty_labels,
+        datasets: [
+      {
+      label: "Vertical Gs (on ground)",
+          fill: true,
+          borderColor: '#d245b3',
+          borderWidth: 2,
+          borderDash: [],
+          borderDashOffset: 0.0,
+          pointBackgroundColor: '#d245b3',
+          pointBorderColor: 'rgba(255,255,255,0)',
+          pointHoverBackgroundColor: '#d245b3',
+          pointBorderWidth: 20,
+          pointHoverRadius: 4,
+          pointHoverBorderWidth: 15,
+          pointRadius: 4,
+          data: list_landing_gs_ground,
+        }, 
+      
+      {
+          
+      label: "Vertical Gs (airborne)",
+          fill: true,
+          borderColor: '#a3a3a3',
+          borderWidth: 2,
+          borderDash: [],
+          borderDashOffset: 0.0,
+          pointBackgroundColor: '#a3a3a3',
+          pointBorderColor: 'rgba(255,255,255,0)',
+          pointHoverBackgroundColor: '#a3a3a3',
+          pointBorderWidth: 20,
+          pointHoverRadius: 4,
+          pointHoverBorderWidth: 15,
+          pointRadius: 4,
+          data: list_landing_gs,
+      
+    },]
+      
+      
+      };
+  
+      var myChart = new Chart(chartGs, {
+        type: 'line',
+        data: data,
+        options: gradientChartOptionsConfigurationWithTooltipPurple
+      });
+  
+  /// End of Good Example
+  
+  
+  /// Good Example ///
+  
+      var ctxVSpeed = document.getElementById("chartLineVSpeed").getContext("2d");
+  
+      var data = {
+        labels: empty_labels,
+        datasets: [
+      {
+      label: "Vertical Speed (on ground)",
+          fill: true,
+          borderColor: '#008dee',
+          borderWidth: 2,
+          borderDash: [],
+          borderDashOffset: 0.0,
+          pointBackgroundColor: '#008dee',
+          pointBorderColor: 'rgba(255,255,255,0)',
+          pointHoverBackgroundColor: '#008dee',
+          pointBorderWidth: 20,
+          pointHoverRadius: 4,
+          pointHoverBorderWidth: 15,
+          pointRadius: 4,
+          data: list_landing_vspeed_ground,
+        }, 
+      
+      {
+          
+      label: "Vertical Speed (airborne)",
+          fill: true,
+          borderColor: '#a3a3a3',
+          borderWidth: 2,
+          borderDash: [],
+          borderDashOffset: 0.0,
+          pointBackgroundColor: '#a3a3a3',
+          pointBorderColor: 'rgba(255,255,255,0)',
+          pointHoverBackgroundColor: '#a3a3a3',
+          pointBorderWidth: 20,
+          pointHoverRadius: 4,
+          pointHoverBorderWidth: 15,
+          pointRadius: 4,
+          data: list_landing_vspeed,
+      
+    },]
+      
+      
+      };
+  
+      var myChart = new Chart(ctxVSpeed, {
+        type: 'line',
+        data: data,
+        options: gradientChartOptionsConfigurationWithTooltipBlue
+      });
+  
+  /// End of Good Example
+  
+  /// Good Example ///
+  
+      var ctxAlt = document.getElementById("chartLineAlt").getContext("2d");
+  
+      var data = {
+        labels: empty_labels,
+        datasets: [
+      {
+      label: "Altitude Above Ground (on ground)",
+          fill: true,
+          borderColor: '#00d6b6',
+          borderWidth: 2,
+          borderDash: [],
+          borderDashOffset: 0.0,
+          pointBackgroundColor: '#00d6b6',
+          pointBorderColor: 'rgba(255,255,255,0)',
+          pointHoverBackgroundColor: '#00d6b6',
+          pointBorderWidth: 20,
+          pointHoverRadius: 4,
+          pointHoverBorderWidth: 15,
+          pointRadius: 4,
+          data: list_landing_alts_ground,
+        }, 
+      
+      {
+          
+      label: "Altitude Above Ground (airborne)",
+          fill: true,
+          borderColor: '#a3a3a3',
+          borderWidth: 2,
+          borderDash: [],
+          borderDashOffset: 0.0,
+          pointBackgroundColor: '#a3a3a3',
+          pointBorderColor: 'rgba(255,255,255,0)',
+          pointHoverBackgroundColor: '#a3a3a3',
+          pointBorderWidth: 20,
+          pointHoverRadius: 4,
+          pointHoverBorderWidth: 15,
+          pointRadius: 4,
+          data: list_landing_alts,
+      
+    },]
+      
+      
+      };
+  
+      var myChart = new Chart(ctxAlt, {
+        type: 'line',
+        data: data,
+        options: gradientChartOptionsConfigurationWithTooltipGreen
+      });
+  
+  /// End of Good Example      
+  
+  // END CHARTS
+  
+    },
+  
+  
+  };
+      
+      
+      dummy = dummy + 1;
+      
+    }
+    });
+  };
+  </script>
+  <link
+  rel="stylesheet"
+  href="https://js.arcgis.com/4.16/esri/themes/light/main.css"
+/>
+<script src="https://js.arcgis.com/4.16/"></script>
+</body>
+{% endblock %}
