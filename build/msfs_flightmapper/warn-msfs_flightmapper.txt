@@ -1,0 +1,83 @@
+
+This file lists modules PyInstaller was not able to find. This does not
+necessarily mean this module is required for running you program. Python and
+Python 3rd-party packages include a lot of conditional or optional modules. For
+example the module 'ntpath' only exists on Windows, whereas the module
+'posixpath' only exists on Posix systems.
+
+Types if import:
+* top-level: imported at the top-level - look at these first
+* conditional: imported within an if-statement
+* delayed: imported from within a function
+* optional: imported within a try-except-statement
+
+IMPORTANT: Do NOT post this list to the issue-tracker. Use it as a basis for
+           yourself tracking down the missing module. Thanks!
+
+missing module named pyimod03_importers - imported by C:\Users\antho\AppData\Local\Programs\Python\Python39\Lib\site-packages\PyInstaller\hooks\rthooks\pyi_rth_pkgres.py (top-level)
+missing module named 'pkg_resources.extern.pyparsing' - imported by pkg_resources._vendor.packaging.requirements (top-level), pkg_resources._vendor.packaging.markers (top-level)
+missing module named _manylinux - imported by pkg_resources._vendor.packaging.tags (delayed, optional)
+missing module named _posixshmem - imported by multiprocessing.resource_tracker (conditional), multiprocessing.shared_memory (conditional)
+missing module named org - imported by copy (optional)
+missing module named multiprocessing.TimeoutError - imported by multiprocessing (top-level), multiprocessing.pool (top-level)
+missing module named multiprocessing.get_context - imported by multiprocessing (top-level), multiprocessing.pool (top-level), multiprocessing.managers (top-level), multiprocessing.sharedctypes (top-level)
+missing module named posix - imported by os (conditional, optional), shutil (conditional)
+missing module named resource - imported by posix (top-level), test.support (delayed, conditional, optional)
+missing module named grp - imported by shutil (optional), tarfile (optional), pathlib (delayed, optional), subprocess (optional)
+missing module named asyncio.DefaultEventLoopPolicy - imported by asyncio (delayed, conditional), asyncio.events (delayed, conditional)
+missing module named urllib.pathname2url - imported by urllib (conditional), PyInstaller.lib.modulegraph._compat (conditional)
+missing module named urllib.quote - imported by urllib (optional), jinja2._compat (optional)
+missing module named termios - imported by tty (top-level), getpass (optional), click.termui (delayed, optional), click._termui_impl (conditional), werkzeug._reloader (delayed, optional)
+missing module named pep517 - imported by importlib.metadata (delayed)
+missing module named _frozen_importlib_external - imported by importlib._bootstrap (delayed), importlib (optional), importlib.abc (optional), zipimport (top-level)
+excluded module named _frozen_importlib - imported by importlib (optional), importlib.abc (optional), zipimport (top-level), PyInstaller.loader.pyimod02_archive (delayed)
+missing module named readline - imported by cmd (delayed, conditional, optional), code (delayed, conditional, optional), pdb (delayed, optional)
+missing module named 'org.python' - imported by pickle (optional), xml.sax (delayed, conditional)
+missing module named multiprocessing.set_start_method - imported by multiprocessing (top-level), multiprocessing.spawn (top-level)
+missing module named multiprocessing.get_start_method - imported by multiprocessing (top-level), multiprocessing.spawn (top-level)
+missing module named _scproxy - imported by urllib.request (conditional)
+missing module named 'java.lang' - imported by platform (delayed, optional), xml.sax._exceptions (conditional)
+missing module named multiprocessing.BufferTooShort - imported by multiprocessing (top-level), multiprocessing.connection (top-level)
+missing module named multiprocessing.AuthenticationError - imported by multiprocessing (top-level), multiprocessing.connection (top-level)
+missing module named _testinternalcapi - imported by test.support (delayed)
+missing module named _posixsubprocess - imported by subprocess (optional), multiprocessing.util (delayed)
+missing module named pwd - imported by posixpath (delayed, conditional), shutil (optional), tarfile (optional), pathlib (delayed, conditional, optional), subprocess (optional), http.server (delayed, optional), webbrowser (delayed), netrc (delayed, conditional), getpass (delayed), distutils.util (delayed, conditional, optional)
+missing module named __builtin__ - imported by werkzeug._compat (optional), pkg_resources._vendor.pyparsing (conditional)
+missing module named ordereddict - imported by pkg_resources._vendor.pyparsing (optional)
+missing module named 'com.sun' - imported by pkg_resources._vendor.appdirs (delayed, conditional, optional)
+missing module named com - imported by pkg_resources._vendor.appdirs (delayed)
+missing module named win32api - imported by pkg_resources._vendor.appdirs (delayed, conditional, optional)
+missing module named win32com.shell - imported by pkg_resources._vendor.appdirs (delayed, conditional, optional)
+missing module named _winreg - imported by platform (delayed, optional), werkzeug.debug (delayed, optional), pkg_resources._vendor.appdirs (delayed, conditional)
+missing module named StringIO - imported by PyInstaller.lib.modulegraph._compat (conditional), PyInstaller.lib.modulegraph.zipio (conditional), werkzeug._compat (conditional), pkg_resources._vendor.six (conditional)
+missing module named pkg_resources.extern.packaging - imported by pkg_resources.extern (top-level), pkg_resources (top-level)
+missing module named pkg_resources.extern.appdirs - imported by pkg_resources.extern (top-level), pkg_resources (top-level)
+missing module named 'pkg_resources.extern.six.moves' - imported by pkg_resources (top-level), pkg_resources._vendor.packaging.requirements (top-level)
+missing module named pkg_resources.extern.six - imported by pkg_resources.extern (top-level), pkg_resources (top-level)
+missing module named vms_lib - imported by platform (delayed, optional)
+missing module named java - imported by platform (delayed)
+missing module named blinker - imported by flask.signals (optional)
+missing module named urllib2 - imported by werkzeug.http (optional), werkzeug.test (optional), werkzeug.debug.tbtools (delayed, optional)
+missing module named 'email.Utils' - imported by werkzeug.http (optional)
+missing module named cookielib - imported by werkzeug.test (optional)
+missing module named 'watchdog.events' - imported by werkzeug._reloader (delayed)
+missing module named watchdog - imported by werkzeug._reloader (delayed)
+missing module named thread - imported by werkzeug.local (optional)
+missing module named greenlet - imported by werkzeug.local (optional)
+missing module named 'cryptography.hazmat' - imported by werkzeug.serving (delayed, optional)
+missing module named 'cryptography.x509' - imported by werkzeug.serving (delayed, optional)
+missing module named cryptography - imported by werkzeug.serving (delayed, optional)
+missing module named colorama - imported by click._compat (conditional, optional)
+missing module named fcntl - imported by click._compat (conditional, optional), click.termui (delayed, optional)
+missing module named BaseHTTPServer - imported by werkzeug.serving (optional)
+missing module named SocketServer - imported by werkzeug.serving (optional)
+missing module named cStringIO - imported by cPickle (top-level), jinja2._compat (conditional), werkzeug._compat (conditional), flask._compat (conditional), click.testing (conditional)
+missing module named copy_reg - imported by cPickle (top-level), cStringIO (top-level)
+missing module named simplejson - imported by itsdangerous._json (optional), werkzeug.wrappers.json (optional)
+missing module named OpenSSL - imported by flask.cli (delayed, conditional, optional)
+missing module named dotenv - imported by flask.cli (optional)
+missing module named htmlentitydefs - imported by werkzeug.utils (optional)
+missing module named cPickle - imported by jinja2._compat (conditional)
+missing module named pretty - imported by jinja2.utils (delayed, optional)
+missing module named tputil - imported by jinja2.debug (conditional, optional)
+missing module named _speedups - imported by markupsafe (optional)
