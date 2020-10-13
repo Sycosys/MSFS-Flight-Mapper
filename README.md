@@ -3,6 +3,13 @@
 
 
 Flight mapping tool 2.0 is in early development and may have bugs. 
+## October 13, 2020: Mapping 2.01
+- **3D Airplane model that mimics aircraft orientation
+- **App will now wait for MSFS to be started and doesnt need to be started after msfs is running
+- **some typos and other mundane stuff
+
+![](images/Screen_3.png)
+
 ## October 12, 2020: Mapping 2.0
 - **Run the App with an EXE! No more python requirements
 - **Rebuilt mapping based on ESRI Sceneview 3D mapping tools
