@@ -48,13 +48,12 @@ def simconnect_thread_func(threadname):
                 print("Did you Start MSFS 2020?")    
             try:
                 sm = SimConnect()
-                x=False
-                
+                x=False   
             except:
                 y=y+1
                 continue
             time.sleep(2)
-            
+
     aq = AircraftRequests(sm, _time = 0)
     
     # Init variables
@@ -69,6 +68,8 @@ def simconnect_thread_func(threadname):
     lat_prev = 0
     lng_prev = 0
     bearing_prev = 0
+    roll_prev = 0
+    pitch_prev = 0
     sim_on_ground_prev = 0
 
     alt_prev = 0
@@ -243,6 +244,17 @@ def simconnect_thread_func(threadname):
         else:
             bearing_prev = bearing
 
+        pitch = aq.get("PLANE_PITCH_DEGREES")
+        if pitch < -99999:
+            pitch = pitch_prev
+        else:
+            pitch_prev = pitch    
+        roll = aq.get("PLANE_BANK_DEGREES")
+        if roll < -99999:
+            roll = roll_prev
+        else:
+            roll_prev = roll  
+
         if v_speed < -99999:
             v_speed = v_speed_prev
         else:
@@ -342,6 +354,8 @@ def simconnect_thread_func(threadname):
         simconnect_dict["LATITUDE"] = round(lat,9)
         simconnect_dict["LONGITUDE"] = round(lng,9)
         simconnect_dict["BEARING"] = math.degrees(bearing)
+        simconnect_dict["PITCH"] = math.degrees(pitch)*-1
+        simconnect_dict["ROLL"] = math.degrees(roll)*-1
         simconnect_dict["ALTITUDE"] = round(alt,1)
         simconnect_dict["GND_ALTITUDE"] = round(plane_alt_above_ground,1)
         simconnect_dict["GRND_ELEV"] = grnd_elv

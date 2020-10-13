@@ -152,6 +152,9 @@
     var panBool=true;
     var zoomBool=true;
     var x = 0;
+    var dpth=40;
+    var hght=12.5;
+    var wdth=40;
 
     function panToggle(){
       var elm =document.getElementById("togglePan");
@@ -190,7 +193,8 @@
       //document.getElementById("lndIns").style.fontSize = "x-large";
       //document.getElementById("fltMap").style.fontSize = "x-large";
       require(["esri/Map", "esri/views/SceneView","esri/Viewpoint","esri/layers/GraphicsLayer",
-        "esri/Graphic","esri/widgets/BasemapToggle"], function (Map, SceneView,Viewpoint, GraphicsLayer, Graphic,BasemapToggle) {
+        "esri/Graphic","esri/widgets/BasemapToggle",  "esri/symbols/PointSymbol3D",
+  "esri/symbols/ObjectSymbol3DLayer"  ], function (Map, SceneView,Viewpoint, GraphicsLayer, Graphic,BasemapToggle,PointSymbol3D, ObjectSymbol3DLayer) {
          mymap = new Map({
           basemap: "hybrid",
           ground: "world-elevation"
@@ -218,15 +222,21 @@
           y: 0,
           z: 0
         };
-        markerSymbol = {
-          type: "simple-marker", // autocasts as new SimpleMarkerSymbol()
-          color: [226, 119, 40],
-          outline: {
-            // autocasts as new SimpleLineSymbol()
-            color: [255, 255, 255],
-            width: 2
-          }
-        };
+        markerSymbol = new PointSymbol3D({
+        symbolLayers: [
+          new ObjectSymbol3DLayer({
+            anchor: "origin",
+            depth: dpth,
+            height: hght,
+            resource: {
+              href: "https://static.arcgis.com/arcgis/styleItems/RealisticTransportation/web/resource/Airplane_Propeller.json"
+            },
+            width: wdth,
+            heading: 0,
+            tilt: 0,
+            roll: 0
+          })]
+      });
 
         pointGraphic = new Graphic({
           geometry: point,
@@ -289,11 +299,16 @@
     seaAlt=data_simconnect.ALTITUDE
     dist=data_simconnect.TARGET_DIST
     bearing=data_simconnect.BEARING
+    pitch=data_simconnect.PITCH
+    roll=data_simconnect.ROLL
     coordSet=[long,lat,seaAlt*0.3048];
     path.push(coordSet)
     var newPointGraphic=pointGraphic.clone();
     var newPolylineGraphic=polylineGraphic.clone();
     graphicsLayer.removeAll();
+    //console.log(view.zoom)
+    
+    
     basezoom=19;
     zm=basezoom-Math.log1p(gndAlt/10);
     if (x==50){
@@ -333,10 +348,38 @@
       }
     x+=1
 
+    //console.log(view.zoom)
+    var multiplier=17-view.zoom
+    if (multiplier >1.0){
+      
+        multiplier= (multiplier*multiplier*multiplier); 
+    }
+    else {
+      multiplier=1
+    }
+    if (view.zoom > 16){multiplier=1}
+    
+    
     newPolylineGraphic.geometry.paths=path
     newPointGraphic.geometry.latitude=lat;
     newPointGraphic.geometry.longitude=long;
-    newPointGraphic.geometry.z=seaAlt*0.3048 
+    newPointGraphic.geometry.z=seaAlt*0.3048;
+    //console.log(newPointGraphic);
+    const pointSymbol = newPointGraphic.symbol.clone(); 
+    //console.log(pointSymbol);     
+      const symbolLayer = pointSymbol.symbolLayers.getItemAt(0);
+      symbolLayer.heading = bearing;
+      symbolLayer.roll = roll;
+      symbolLayer.tilt = pitch;
+      symbolLayer.depth =dpth*multiplier
+      symbolLayer.width =wdth*multiplier                
+      symbolLayer.height =hght*multiplier
+
+      pointSymbol.symbolLayers = [symbolLayer];      
+      // UPDATE SYMBOL //
+      newPointGraphic.symbol = pointSymbol;   
+
+
     graphicsLayer.add(newPointGraphic);
     graphicsLayer.add(newPolylineGraphic);
     pointGraphic=newPointGraphic.clone();
