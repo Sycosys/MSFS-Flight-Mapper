@@ -3,6 +3,7 @@ from SimConnectCust import *
 from threading import Thread
 import math
 import sys
+import time
 
 simconnect_dict = {}
 
@@ -33,8 +34,27 @@ def simconnect_thread_func(threadname):
     
     global simconnect_dict
     
-    # Init SimConnect
-    sm = SimConnect()
+    # Init SimConnect, Wait for MSFS to respond
+    try:
+        sm = SimConnect()
+    except:
+        x=True
+        print("WAITING FOR MSFS 2020 TO START")
+        y=1
+        while x == True:
+            if y % 10 == 0:
+                print("...")
+            if y % 100 == 0:
+                print("Did you Start MSFS 2020?")    
+            try:
+                sm = SimConnect()
+                x=False
+                
+            except:
+                y=y+1
+                continue
+            time.sleep(2)
+            
     aq = AircraftRequests(sm, _time = 0)
     
     # Init variables

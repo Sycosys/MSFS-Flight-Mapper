@@ -1,1 +1,1 @@
-python msfs_landing_inspector.py
+python msfs_flightmapper.py
