@@ -152,6 +152,14 @@
     var panBool=true;
     var zoomBool=true;
     var x = 0;
+
+    var prop='https://static.arcgis.com/arcgis/styleItems/RealisticTransportation/web/resource/Airplane_Propeller.json'
+    var smJet='https://static.arcgis.com/arcgis/styleItems/RealisticTransportation/web/resource/Airplane_Private.json'
+    var smJetGear='https://static.arcgis.com/arcgis/styleItems/RealisticTransportation/web/resource/Airplane_Private_With_Wheels.json'
+    var lgJet='https://static.arcgis.com/arcgis/styleItems/RealisticTransportation/web/resource/Airplane_Large_Passenger.json'
+    var lgJetGear='https://static.arcgis.com/arcgis/styleItems/RealisticTransportation/web/resource/Airplane_Large_Passenger_With_Wheels.json'
+    var easter='https://static.arcgis.com/arcgis/styleItems/RealisticTransportation/web/resource/Sailboat_-_Sails_Up.json'
+
     var dpth=40;
     var hght=12.5;
     var wdth=40;
@@ -222,6 +230,9 @@
           y: 0,
           z: 0
         };
+
+
+
         markerSymbol = new PointSymbol3D({
         symbolLayers: [
           new ObjectSymbol3DLayer({
@@ -229,7 +240,7 @@
             depth: dpth,
             height: hght,
             resource: {
-              href: "https://static.arcgis.com/arcgis/styleItems/RealisticTransportation/web/resource/Airplane_Propeller.json"
+              href: prop
             },
             width: wdth,
             heading: 0,
@@ -293,16 +304,19 @@
       $('#G_FORCE_LANDING_Output').text(data_simconnect.G_FORCE_LANDING)
       $('#VERTICAL_SPEED_LANDING_Output').text(data_simconnect.VERTICAL_SPEED_LANDING)
       $('#LANDING_RATING_Output').text(data_simconnect.LANDING_RATING)
-    lat=data_simconnect.LATITUDE
-    long=data_simconnect.LONGITUDE
-    gndAlt=data_simconnect.GND_ALTITUDE
-    seaAlt=data_simconnect.ALTITUDE
-    dist=data_simconnect.TARGET_DIST
-    bearing=data_simconnect.BEARING
-    pitch=data_simconnect.PITCH
-    roll=data_simconnect.ROLL
+    
+    
+    lat=data_simconnect.LATITUDE;
+    long=data_simconnect.LONGITUDE;
+    gndAlt=data_simconnect.GND_ALTITUDE;
+    seaAlt=data_simconnect.ALTITUDE;
+    dist=data_simconnect.TARGET_DIST;
+    bearing=data_simconnect.BEARING;
+    pitch=data_simconnect.PITCH;
+    roll=data_simconnect.ROLL;
     coordSet=[long,lat,seaAlt*0.3048];
-    path.push(coordSet)
+    path.push(coordSet);
+    //console.log(data_simconnect.ENGINE_TYPE);
     var newPointGraphic=pointGraphic.clone();
     var newPolylineGraphic=polylineGraphic.clone();
     graphicsLayer.removeAll();
@@ -369,6 +383,7 @@
       symbolLayer.depth =dpth*multiplier
       symbolLayer.width =wdth*multiplier                
       symbolLayer.height =hght*multiplier
+      console.log(symbolLayer.resource)
 
       pointSymbol.symbolLayers = [symbolLayer];      
       // UPDATE SYMBOL //

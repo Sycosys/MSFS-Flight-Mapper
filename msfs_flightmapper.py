@@ -28,7 +28,7 @@ def flask_thread_func(threadname):
     def index():
         return render_template('body.html')
 
-    app.run(host='127.0.0.1',port=5001, debug=False, use_reloader=False)
+    app.run(host='0.0.0.0',port=5001, debug=False, use_reloader=False)
 
 def simconnect_thread_func(threadname):
     
@@ -114,7 +114,9 @@ def simconnect_thread_func(threadname):
     simconnect_dict["VERTICAL_SPEED_LANDING"] = "N/A"
     simconnect_dict["SIM_ON_GROUND_LIST"] = "N/A"
     simconnect_dict["AIRBORNE"] = 0
+
     simconnect_dict["ENGINE_TYPE"]=-1
+
     simconnect_dict["G_FORCE_LIST"] = g_force_list
     simconnect_dict["V_SPEED_LIST"] = v_speed_list
     simconnect_dict["G_FORCE_LANDING_LIST"] = "N/A"
